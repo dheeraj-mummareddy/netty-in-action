@@ -1,5 +1,4 @@
 
-
 # netty-in-action
 
 [![Build status](https://travis-ci.org/dheeraj-mummareddy/netty-in-action.svg?branch=master)](https://travis-ci.org/dheeraj-mummareddy/netty-in-action)
