@@ -1,0 +1,30 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+  - $HOME/.gradle
+
+script:
+  - ./gradlew clean build -PreleaseType=$RELEASE_TYPE
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+# use latest java version available instead of travis default
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+notifications:
+  email:
+    - dheeraj.mummareddy@gmail.com
+
+sudo: false

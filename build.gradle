@@ -1,0 +1,26 @@
+apply from: 'https://raw.githubusercontent.com/dheeraj-mummareddy/gradle-templates/master/gradle/jumpstart-java-jar-project.gradle'
+
+ext {
+
+    //test
+    spockVersion = "1.0-groovy-2.4"
+    junitVersion = "4.11"
+    mockitoVersion = '1.10.8'
+    groovyVersion = "2.4.4"
+    cgiLibVersion = "3.1"
+    
+    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+    targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+}
+
+dependencies {
+
+    testCompile(
+            "junit:junit:$junitVersion",
+            "org.mockito:mockito-all:$mockitoVersion",
+            "org.codehaus.groovy:groovy-all:$groovyVersion",
+            "cglib:cglib:$cgiLibVersion",
+            "org.spockframework:spock-core:$spockVersion"
+    )
+}
+
