@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/dheeraj-mummareddy/netty-in-action.png?label=ready&title=Ready)](https://waffle.io/dheeraj-mummareddy/netty-in-action)
 
 # netty-in-action
 
