@@ -9,7 +9,7 @@
 
 # Introduction
 
-Netty in action
+Netty in action. Netty is an event-driven asynchronous network application framework.
 
 # License
 

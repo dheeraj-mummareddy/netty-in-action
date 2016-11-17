@@ -1,7 +1,7 @@
 apply from: 'https://raw.githubusercontent.com/dheeraj-mummareddy/gradle-templates/master/gradle/jumpstart-java-jar-project.gradle'
 
 ext {
-
+    nettyVersion = "4.1.6.Final"
     //test
     spockVersion = "1.0-groovy-2.4"
     junitVersion = "4.11"
@@ -14,6 +14,10 @@ ext {
 }
 
 dependencies {
+
+    compile(
+	"io.netty:netty-all:$nettyVersion"
+    )
 
     testCompile(
             "junit:junit:$junitVersion",
