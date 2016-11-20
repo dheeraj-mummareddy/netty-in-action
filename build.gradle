@@ -1,19 +1,23 @@
 apply from: 'https://raw.githubusercontent.com/dheeraj-mummareddy/gradle-templates/master/gradle/jumpstart-java-jar-project.gradle'
 
 ext {
-
+    nettyVersion = "4.1.6.Final"
     //test
     spockVersion = "1.0-groovy-2.4"
     junitVersion = "4.11"
     mockitoVersion = '1.10.8'
     groovyVersion = "2.4.4"
     cgiLibVersion = "3.1"
-    
+
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
     targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
 }
 
 dependencies {
+
+    compile(
+            "io.netty:netty-all:$nettyVersion"
+    )
 
     testCompile(
             "junit:junit:$junitVersion",
