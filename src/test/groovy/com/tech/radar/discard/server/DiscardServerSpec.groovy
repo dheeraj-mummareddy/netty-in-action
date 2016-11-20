@@ -93,19 +93,15 @@ class DiscardServerSpec extends Specification {
     }
 
     def "given a message to DiscardServer, message should be discarded"() {
-        given: "a telnet process"
-        def proc = ('telnet ' + getHostName() + ' ' + currentPort)
-        println(proc)
+        given: "a clientChannelFuture"
+        ChannelFuture clientChannelFuture = clientChannelFuture
 
-        when: "we execute the process"
-        def processExec = proc.execute()
-        clientChannelFuture.channel().writeAndFlush(message())
+        when: "we write a message to the channel"
+        def writeFuture = clientChannelFuture.channel().writeAndFlush(message())
 
-        then: "should expect the process to be alive"
-        processExec.alive
-
-        and: "process should successfully shutdown"
-        processExec.destroy()
+        then: "await"
+        def awaitFuture = writeFuture.await()
+        awaitFuture == writeFuture
     }
 
     private String getHostName() {
