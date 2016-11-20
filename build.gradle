@@ -8,7 +8,7 @@ ext {
     mockitoVersion = '1.10.8'
     groovyVersion = "2.4.4"
     cgiLibVersion = "3.1"
-    
+
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
     targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
 }
@@ -16,7 +16,7 @@ ext {
 dependencies {
 
     compile(
-	"io.netty:netty-all:$nettyVersion"
+            "io.netty:netty-all:$nettyVersion"
     )
 
     testCompile(

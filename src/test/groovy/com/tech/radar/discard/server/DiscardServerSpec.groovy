@@ -1,17 +1,23 @@
 package com.tech.radar.discard.server
 
 import com.tech.radar.utils.SocketPortUtils
+import io.netty.bootstrap.Bootstrap
 import io.netty.bootstrap.ServerBootstrap
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
+import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import spock.lang.Shared
 import spock.lang.Specification
+
+import java.nio.charset.StandardCharsets
 
 /**
  * Created by dmumma on 11/5/16.
@@ -25,7 +31,10 @@ class DiscardServerSpec extends Specification {
     EventLoopGroup workerGroup
 
     @Shared
-    ChannelFuture channelFuture
+    ChannelFuture serverChannelFuture
+
+    @Shared
+    ChannelFuture clientChannelFuture
 
     @Shared
     int currentPort
@@ -37,18 +46,34 @@ class DiscardServerSpec extends Specification {
                 new ServerBootstrap()
                         .group(bossGroup, workerGroup)
                         .channel(NioServerSocketChannel.class)
-                        .handler(new LoggingHandler(LogLevel.INFO))
                         .childHandler(new ChannelInitializer<SocketChannel>() {
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast(new DiscardServerHandler());
+                    @Override
+                    public void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast("DiscardServerHandler", new DiscardServerHandler());
                     }
                 })
+                        .handler(new LoggingHandler(LogLevel.INFO))
+
         currentPort = SocketPortUtils.nextFreePort(9000, 9100)
-        channelFuture = serverBootstrap.bind(currentPort).sync();
+        serverChannelFuture = serverBootstrap.bind(currentPort).sync();
+
+        Bootstrap clientBootstrap = new Bootstrap();
+        clientBootstrap
+                .group(workerGroup)
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) throws Exception {
+                ch.pipeline().addLast(new DiscardServerHandler());
+            }
+        });
+
+        clientChannelFuture = clientBootstrap.connect(getHostName(), currentPort).sync()
     }
 
     def cleanupSpec() {
-        channelFuture.channel().close()
+        clientChannelFuture.channel().close()
+        serverChannelFuture.channel().close()
         bossGroup.shutdownGracefully()
         workerGroup.shutdownGracefully()
     }
@@ -59,6 +84,7 @@ class DiscardServerSpec extends Specification {
     }
 
     def cleanup() {
+
     }
 
     def "canary"() {
@@ -68,15 +94,25 @@ class DiscardServerSpec extends Specification {
 
     def "given a message to DiscardServer, message should be discarded"() {
         given: "a telnet process"
-        def proc = ('telnet localhost ' + currentPort)
+        def proc = ('telnet ' + getHostName() + ' ' + currentPort)
+        println(proc)
 
         when: "we execute the process"
         def processExec = proc.execute()
+        clientChannelFuture.channel().writeAndFlush(message())
 
         then: "should expect the process to be alive"
         processExec.alive
 
         and: "process should successfully shutdown"
         processExec.destroy()
+    }
+
+    private String getHostName() {
+        return InetAddress.getLocalHost().getHostName();
+    }
+
+    private static ByteBuf message() {
+        return Unpooled.wrappedBuffer("ping".getBytes(StandardCharsets.US_ASCII));
     }
 }
